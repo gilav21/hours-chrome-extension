@@ -1,0 +1,42 @@
+<html>
+
+<head>
+    <title>Hours filler</title>
+    <script src="popup.js"></script>
+    <link rel="stylesheet" href="popup.css">
+    <link rel="stylesheet" href="font-awesome.min.css">
+</head>
+
+<body>
+    <div class="wrapper">
+        <div class="content-wrapper" id="content-wrapper">
+            <div class="input-wrapper">
+                <input class="real-input" type="file" id="file_input">
+                <label class="input-label" for="file_input">
+                    <span>Choose a file...</span>
+                </label>
+            </div>
+            <div class="file-name">
+                <label id="file-name"></label>
+            </div>
+            <div class="file-stats">
+                <label id="file-stats"></label>
+            </div>
+            <div class="buttons">
+                <button class="action-button" id="wrong_days_btn">Choose Wrong Days</button>
+                <button class="action-button" id="fill_hours_btn">Fill Hours</button>
+                <button class="action-button" id="all_btn">Full Process</button>
+            </div>
+        </div>
+        <div class="loader" id="loader"></div>
+        <div class="check" id="check">
+            <i class="fa-solid fa-circle-check"></i>
+        </div>
+        <div class="input-label click-page" id="click-page">
+            <label>Click Anywhere in page to start filling</label>
+            <img class="smiley-img" src="/smiley.svg">
+        </div>
+    </div>
+</body>
+
+</html>
