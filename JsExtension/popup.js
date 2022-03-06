@@ -15,42 +15,51 @@ function sendMessageToContent(data) {
 }
 
 document.addEventListener('DOMContentLoaded', (event) => {
-    console.log('readdddyyyy')
-    let wrongDaysBtn = document.getElementById("wrong_days_btn");
+    // console.log('readdddyyyy')
+    // let wrongDaysBtn = document.getElementById("wrong_days_btn");
 
-    wrongDaysBtn.addEventListener('click', (event) => {
-        id = 'wrongDays';
-        setLoader(true);
-        sendMessageToContent({action: id});
-    });
+    // wrongDaysBtn.addEventListener('click', (event) => {
+    //     id = 'wrongDays';
+    //     setLoader(true);
+    //     sendMessageToContent({action: id});
+    // });
 
-    let file_input = document.getElementById('file_input');
-    file_input.addEventListener('change', (event) => {
-        id = 'getFileContent';
-        var fr=new FileReader();
-        fr.onload=function(){
-            const file_stats = document.getElementById('file-stats');
-            file_stats.innerHTML = `The file contains ${fr.result.split('\r\n').length} days`
-            sendMessageToContent({action: id, file: fr.result});
-        }
-        fr.readAsText(event.target.files[0]);
-        const file_name = document.getElementById('file-name');
-        file_name.innerHTML = event.target.files[0].name;
-    });
+    // let file_input = document.getElementById('file_input');
+    // file_input.addEventListener('change', (event) => {
+    //     // id = 'getFileContent';
+    //     id = 'getFileText';
+    //     sendMessageToContent({action: id, file: event.target.files[0]});
+    //     // // var fr=new FileReader();
+    //     // var fr=newText();
+    //     // fr.onload=function(){
+    //     //     const file_stats = document.getElementById('file-stats');
+    //     //     file_stats.innerHTML = `The file contains ${fr.result.split('\r\n').length} days`
+    //     //     sendMessageToContent({action: id, file: fr.result});
+    //     // }
+    //     // fr.readAsText(event.target.files[0]);
+    //     // const file_name = document.getElementById('file-name');
+    //     // file_name.innerHTML = event.target.files[0].name;
+    // });
 
-    let fill_hours_btn = document.getElementById('fill_hours_btn');
-    fill_hours_btn.addEventListener('click', (event) => {
-        id = 'fill';
-        // setLoader(true);
-        showClickPageMessage();
-        sendMessageToContent({action: id});
-    });
+    // let fill_hours_btn = document.getElementById('fill_hours_btn');
+    // fill_hours_btn.addEventListener('click', (event) => {
+    //     id = 'fill';
+    //     // setLoader(true);
+    //     showClickPageMessage();
+    //     sendMessageToContent({action: id});
+    // });
 
-    let all_btn = document.getElementById('all_btn');
-    all_btn.addEventListener('click', (event) => {
-        id = 'all';
-        // setLoader(true);
-        showClickPageMessage();
+    // let all_btn = document.getElementById('all_btn');
+    // all_btn.addEventListener('click', (event) => {
+    //     id = 'all';
+    //     // setLoader(true);
+    //     showClickPageMessage();
+    //     sendMessageToContent({action: id});
+    // });
+
+    let inputLabel = document.getElementById('input-label');
+    inputLabel.addEventListener('click', (event) => {
+        id = 'getFileText';
         sendMessageToContent({action: id});
     });
 

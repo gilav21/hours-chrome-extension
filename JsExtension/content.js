@@ -1,6 +1,4 @@
-let fileContent = '';
-
-const prevFocused = document.activeElement;
+let fileContent;
 
 async function reloadFocus() {
     return new Promise( (resolve, reject) => {
@@ -10,17 +8,56 @@ async function reloadFocus() {
     })
 }
 
+function deselectAllDays() {
+    document.querySelectorAll("td[class*='CSD']").forEach(cube => cube.click())
+}
+
+
+function uploadFile() {
+    return new Promise((resolve, reject) => {
+        var fileChooser = document.createElement('input');
+        fileChooser.type = 'file';
+        fileChooser.addEventListener('change', function () {
+            resolve(getFileText(fileChooser.files[0]));
+            form.reset();
+        });
+        var form = document.createElement('form');
+        form.appendChild(fileChooser);
+    
+        fileChooser.click();
+    });
+}
+
+
+function getFileText(file) {
+      var req = fetch('http://127.0.0.1:5000/getTextFromImagePath', {
+        method: 'POST',
+        body: file
+    });
+
+    return req.then(function(response) {
+        if (response.ok) {
+            // console.log('yay', response.body);
+            return response.text();
+        } else{
+            console.log('nay', response);
+            return null;
+        }
+    });
+}
+
+
 function readFile(file) {
-    let data = file.split('\r\n');
+    let data = file.split('\n');
     const entries = data.map(day => {
-        const dayEntries = day.split('-');
-        return { entry: dayEntries[0], exit: dayEntries[1] };
+        const dayAndTime = day.split('=');
+        const dayEntries = dayAndTime[1].split('-');
+        return { day: dayAndTime[0], entry: dayEntries[0], exit: dayEntries[1] };
     });
     let numOfRows = data.length;
     console.log('numOfRows:', numOfRows);
     console.log('entries:', entries);
     fileContent = entries;
-    reloadFocus();
 }
 
 async function fillHours() {
@@ -80,11 +117,13 @@ async function waitForSelect(element) {
 
 function chooseWrongDays() {
     const refreshButton = document.querySelector("input[name$='RefreshSelectedDays']");
-    const images = document.querySelectorAll("img[src$='error.gif']");
-    let imgArr = Array.from(images);
-    imgArr = imgArr.filter(image => image.parentElement.parentElement.className === 'dayImageNumberContainer');
-    imgArr.forEach(img => {
-        img.click();
+    const daysElms = Array.from(document.querySelectorAll("td[class='dTS']"));
+    deselectAllDays();
+    fileContent.forEach(element => {
+        const day = daysElms.find(el => el.innerText === (+element.day).toString());
+        if (day) {
+            day.click();
+        }
     });
     refreshButton.click();
 }
@@ -95,44 +134,47 @@ chrome.runtime.onMessage.addListener(
             "from a content script:" + sender.tab.url :
             "from the extension", request.action);
         switch (request.action) {
-            case 'wrongDays':
-                console.log('choosing days...');
-                chooseWrongDays();
-                sendResponse({ action: 'days' });
-                return true;
-                break
+            // case 'wrongDays':
+            //     console.log('choosing days...');
+            //     chooseWrongDays();
+            //     sendResponse({ action: 'days' });
+            //     return true;
+            //     break
 
-            case 'getFileContent':
+            // case 'getFileContent':
+            //     console.log('reading file...');
+            //     readFile(request.file);
+            //     break
+
+            case 'getFileText':
                 console.log('reading file...');
-                readFile(request.file);
+                uploadFile().then(content => {
+                    readFile(content);
+                    chooseWrongDays();
+                    alert('Click anywhere to start filling');
+                    fillHours();
+                });
                 break
-            case 'fill':
-                console.log('filling hours...');
-                fillHours().then( ()=> {
-                    console.log('sending reponse...');
-                    sendResponse({ action: 'filled' });
-                });
-                return true;
+            // case 'fill':
+            //     console.log('filling hours...');
+            //     fillHours().then( ()=> {
+            //         console.log('sending reponse...');
+            //         sendResponse({ action: 'filled' });
+            //     });
+            //     return true;
                 
-            case 'all':
-                console.log('doing all process...');
-                console.log('choosing days...');
-                chooseWrongDays();
-                new Promise(r => setTimeout(r, 1000)).then( () => {
-                    console.log('filling hours...');
-                    fillHours().then( ()=> {
-                        console.log('sending reponse...');
-                        sendResponse({ action: 'filled' });
-                    });
-                });
-                return true;
+            // case 'all':
+            //     console.log('doing all process...');
+            //     console.log('choosing days...');
+            //     chooseWrongDays();
+            //     new Promise(r => setTimeout(r, 1000)).then( () => {
+            //         console.log('filling hours...');
+            //         fillHours().then( ()=> {
+            //             console.log('sending reponse...');
+            //             sendResponse({ action: 'filled' });
+            //         });
+            //     });
+            //     return true;
         }
     }
 );
-
-// chooseWrongDays();
-// document.onclick = () => {
-//     fillHours();
-//     document.onclick = null;
-// };
-
