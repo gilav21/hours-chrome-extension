@@ -30,7 +30,8 @@ function uploadFile() {
 
 
 function getFileText(file) {
-      var req = fetch('http://127.0.0.1:5000/getTextFromImagePath', {
+      var req = fetch('https://python-ocr-server.herokuapp.com/getTextFromImagePath', {
+      // var req = fetch('http://127.0.0.1:8000/getTextFromImagePath', {
         method: 'POST',
         body: file
     });
@@ -134,18 +135,6 @@ chrome.runtime.onMessage.addListener(
             "from a content script:" + sender.tab.url :
             "from the extension", request.action);
         switch (request.action) {
-            // case 'wrongDays':
-            //     console.log('choosing days...');
-            //     chooseWrongDays();
-            //     sendResponse({ action: 'days' });
-            //     return true;
-            //     break
-
-            // case 'getFileContent':
-            //     console.log('reading file...');
-            //     readFile(request.file);
-            //     break
-
             case 'getFileText':
                 console.log('reading file...');
                 uploadFile().then(content => {
@@ -155,26 +144,6 @@ chrome.runtime.onMessage.addListener(
                     fillHours();
                 });
                 break
-            // case 'fill':
-            //     console.log('filling hours...');
-            //     fillHours().then( ()=> {
-            //         console.log('sending reponse...');
-            //         sendResponse({ action: 'filled' });
-            //     });
-            //     return true;
-                
-            // case 'all':
-            //     console.log('doing all process...');
-            //     console.log('choosing days...');
-            //     chooseWrongDays();
-            //     new Promise(r => setTimeout(r, 1000)).then( () => {
-            //         console.log('filling hours...');
-            //         fillHours().then( ()=> {
-            //             console.log('sending reponse...');
-            //             sendResponse({ action: 'filled' });
-            //         });
-            //     });
-            //     return true;
         }
     }
 );
