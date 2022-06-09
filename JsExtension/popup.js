@@ -16,9 +16,20 @@ function sendMessageToContent(data) {
 
 document.addEventListener('DOMContentLoaded', (event) => {
     let inputLabel = document.getElementById('input-label');
+    let typeSelect = document.getElementById('type-select');
+
+    let selectValue;
+    const fileInput = document.getElementById('file-input');
+    fileInput.style.display = 'none';
+
+    typeSelect.addEventListener('change', (event) => {
+        selectValue = event.target.selectedOptions[0].value;
+        fileInput.style.display = 'block';
+    });
+
     inputLabel.addEventListener('click', (event) => {
         id = 'getFileText';
-        sendMessageToContent({action: id});
+        sendMessageToContent({action: id, type: typeSelect.selectedOptions[0].value});
     });
 
 })

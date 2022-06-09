@@ -1,7 +1,16 @@
 let fileContent;
 
+var req = fetch('https://python-ocr-server.herokuapp.com/', {
+        method: 'GET'
+});
+
+req.then( (response) => {
+    console.log('Hello');
+    console.log(response);
+});
+
 async function reloadFocus() {
-    return new Promise( (resolve, reject) => {
+    return new Promise((resolve, reject) => {
         document.onclick = () => {
             resolve();
         };
@@ -13,34 +22,38 @@ function deselectAllDays() {
 }
 
 
-function uploadFile() {
+function uploadFile(type) {
     return new Promise((resolve, reject) => {
         var fileChooser = document.createElement('input');
         fileChooser.type = 'file';
         fileChooser.addEventListener('change', function () {
-            resolve(getFileText(fileChooser.files[0]));
+            resolve(getFileText(fileChooser.files[0], type));
             form.reset();
         });
         var form = document.createElement('form');
         form.appendChild(fileChooser);
-    
+
         fileChooser.click();
     });
 }
 
 
-function getFileText(file) {
-      var req = fetch('https://python-ocr-server.herokuapp.com/getTextFromImagePath', {
-      // var req = fetch('http://127.0.0.1:8000/getTextFromImagePath', {
+function getFileText(file, type) {
+    
+    var formData = new FormData();
+    formData.append('files', file, file.name);
+    formData.append('type', type);
+    // var req = fetch('http://127.0.0.1:8000/getTextFromImagePath', {
+    var req = fetch('https://python-ocr-server.herokuapp.com/getTextFromImagePath', {
         method: 'POST',
-        body: file
+        body: formData
     });
 
-    return req.then(function(response) {
+    return req.then(function (response) {
         if (response.ok) {
             // console.log('yay', response.body);
             return response.text();
-        } else{
+        } else {
             console.log('nay', response);
             return null;
         }
@@ -48,9 +61,9 @@ function getFileText(file) {
 }
 
 
-function readFile(file) {
-    let data = file.split('\n');
-    const entries = data.map(day => {
+function readFile(file, type) {
+    let data = file.trim().split('\n');
+    const entries = data.map((day, index) => {
         const dayAndTime = day.split('=');
         const dayEntries = dayAndTime[1].split('-');
         return { day: dayAndTime[0], entry: dayEntries[0], exit: dayEntries[1] };
@@ -64,18 +77,18 @@ function readFile(file) {
 async function fillHours() {
     await reloadFocus();
     console.log('clicked... start filling...');
-    return new Promise( async (resolve, reject) => {
+    return new Promise(async (resolve, reject) => {
         let entry;
         let exit;
         entries = fileContent;
         for (let i = 0; i < entries.length; i++) {
             project1 = document.querySelector("select[id$='ProjectStep1_EmployeeReports_row_" + i + "_0']");
             project2 = document.querySelector("select[id$='ProjectStep2_EmployeeReports_row_" + i + "_0']");
-            
+
             project3 = document.querySelector("select[id$='ProjectStep3_EmployeeReports_row_" + i + "_0']");
             entry = document.querySelector("input[id$='ManualEntry_EmployeeReports_row_" + i + "_0']");
             exit = document.querySelector("input[id$='ManualExit_EmployeeReports_row_" + i + "_0']");
-            
+
             if (entry && exit) {
                 exit.tabIndex = 1;
                 project1.selectedIndex = 2;
@@ -105,7 +118,7 @@ async function waitForSelect(element) {
         const start = Date.now();
         let counter = 0;
         while (element.disabled || element.children.length === 0) {
-            counter ++;
+            counter++;
             await new Promise(r => setTimeout(r, 50));
         }
         const duration = Date.now() - start;
@@ -137,8 +150,8 @@ chrome.runtime.onMessage.addListener(
         switch (request.action) {
             case 'getFileText':
                 console.log('reading file...');
-                uploadFile().then(content => {
-                    readFile(content);
+                uploadFile(request.type).then(content => {
+                    readFile(content, request.type);
                     chooseWrongDays();
                     alert('Click anywhere to start filling');
                     fillHours();

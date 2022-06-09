@@ -1,13 +1,13 @@
 body {
     margin: 0;
     width: 200px;
-    height: 100px;
+    height: 180px;
 }
 
 html {
     margin: 0;
     width: 200px;
-    height: 100px;
+    height: 180px;
 }
 
 .wrapper {
@@ -41,4 +41,9 @@ html {
 
 .image {
     height: 100px;
+}
+
+.type-wrapper {
+    display: flex;
+    justify-content: center;
 }
